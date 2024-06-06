@@ -243,6 +243,7 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
 Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timestamp, const vector<IMU::Point>& vImuMeas, string filename)
 {
+    //std::cout << "tracking stereo" << std::endl;
     if(mSensor!=STEREO && mSensor!=IMU_STEREO)
     {
         cerr << "ERROR: you called TrackStereo but input sensor was not set to Stereo nor Stereo-Inertial." << endl;
@@ -250,6 +251,7 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
     }
 
     cv::Mat imLeftToFeed, imRightToFeed;
+    
     if(settings_ && settings_->needToRectify()){
         cv::Mat M1l = settings_->M1l();
         cv::Mat M2l = settings_->M2l();
@@ -264,8 +266,10 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
         cv::resize(imRight,imRightToFeed,settings_->newImSize());
     }
     else{
+    	//std::cout << "cloning images" << std::endl;
         imLeftToFeed = imLeft.clone();
         imRightToFeed = imRight.clone();
+        //std::cout << imLeftToFeed << std::endl;
     }
 
     // Check mode change
@@ -274,7 +278,7 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
         if(mbActivateLocalizationMode)
         {
             mpLocalMapper->RequestStop();
-
+            //std::cout << "waiting for local mapping" << std::endl;
             // Wait until Local Mapping has effectively stopped
             while(!mpLocalMapper->isStopped())
             {
@@ -312,10 +316,10 @@ Sophus::SE3f System::TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, 
         for(size_t i_imu = 0; i_imu < vImuMeas.size(); i_imu++)
             mpTracker->GrabImuData(vImuMeas[i_imu]);
 
-    // std::cout << "start GrabImageStereo" << std::endl;
+    //std::cout << "start GrabImageStereo" << std::endl;
     Sophus::SE3f Tcw = mpTracker->GrabImageStereo(imLeftToFeed,imRightToFeed,timestamp,filename);
 
-    // std::cout << "out grabber" << std::endl;
+    //std::cout << "out grabber" << std::endl;
 
     unique_lock<mutex> lock2(mMutexState);
     mTrackingState = mpTracker->mState;
@@ -1335,6 +1339,18 @@ vector<cv::KeyPoint> System::GetTrackedKeyPointsUn()
     unique_lock<mutex> lock(mMutexState);
     return mTrackedKeyPointsUn;
 }
+
+std::vector<KeyFrame*> System::GetAllKeyFrames(){
+    return mpAtlas->GetAllKeyFrames();
+}
+
+std::vector<MapPoint*> System::GetAllMapPoints(){
+    return mpAtlas->GetAllMapPoints();
+}
+
+std::vector<MapPoint*> System::GetReferenceMapPoints(){
+        return mpAtlas->GetReferenceMapPoints();
+    }
 
 double System::GetTimeFromIMUInit()
 {
