@@ -158,8 +158,19 @@ System::System(const string &strVocFile, const string &strSettingsFile, const eS
 
         if(!isRead)
         {
-            cout << "Error to load the file, please try with other session file or vocabulary file" << endl;
-            exit(-1);
+            cout << "Error to load the file, creating new map" << endl;
+
+            //create a copy of current map as it is usally overwritten when shutdown is called
+            // string pathLoadFileName = "./";
+            // pathLoadFileName = pathLoadFileName.append(mStrLoadAtlasFromFile);
+            // pathLoadFileName = pathLoadFileName.append(".osa");
+            // string pathCopyFilename = "./";
+            // pathCopyFilename = pathLoadFileName.append(mStrLoadAtlasFromFile);
+            // pathCopyFilename = pathLoadFileName.append("_copy");
+            // pathCopyFilename = pathLoadFileName.append(".osa");
+
+
+            //std::filesystem::copy(pathLoadFileName, pathCopyFilename, std::filesystem::copy_options::overwrite_existing);
         }
         //mpKeyFrameDatabase = new KeyFrameDatabase(*mpVocabulary);
 
