@@ -7,7 +7,7 @@ set(CMAKE_CXX_COMPILER /usr/bin/aarch64-linux-gnu-g++)
 
 # where is the target environment located
 set(CMAKE_SYSROOT /media/torben/writable)
-set(CMAKE_FIND_ROOT_PATH ~/ORBSLAM3_ROS2_workspace/ORB_SLAM3)
+#set(CMAKE_FIND_ROOT_PATH /media/torben/writable)
 
 # adjust the default behavior of the FIND_XXX() commands:
 # search programs in the host environment
